@@ -518,11 +518,12 @@ impl WorkspaceSet {
             return Err(InvalidWorkspaceIndex);
         }
 
-        // Animate if workspaces overview isn't open
+        // Keep gesture transitions interactive, but switch immediately for shortcuts.
         let layer_map = layer_map_for_output(&self.output);
-        let animate = !layer_map
-            .layers()
-            .any(|l| l.namespace() == WORKSPACE_OVERVIEW_NAMESPACE);
+        let animate = !matches!(workspace_delta, WorkspaceDelta::Shortcut(_))
+            && !layer_map
+                .layers()
+                .any(|l| l.namespace() == WORKSPACE_OVERVIEW_NAMESPACE);
 
         if self.active != idx {
             let old_active = self.active;
